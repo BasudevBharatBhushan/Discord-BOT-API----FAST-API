@@ -9,6 +9,7 @@ intents.message_content = True
 intents.members = True
 
 #set stage instance intent be true (Unable to found it in doc)
+# intents.stage_instances = True
 
 
 
