@@ -15,7 +15,7 @@
   ` pip3 install -r requirements.txt`
 
 - Step 5: Add .enf file  
-  ` DISCORD_BOT_TOKEN =[Enter your Discord Bot Token]  
+  `DISCORD_BOT_TOKEN =[Enter your Discord Bot Token] `
   See Here - [How to create a Discord BOT](#create-a-discord-bot)
 
 - Step 5: Start the Server  
