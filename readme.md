@@ -55,6 +55,8 @@
 
 - [Discord Python SDK](https://discordpy.readthedocs.io/en/stable/index.html)
 
+- [Event References](https://discordpy.readthedocs.io/en/stable/api.html#event-reference)
+
 - [Stage Event](https://discordpy.readthedocs.io/en/latest/api.html?highlight=on_stage_instance_create#discord.on_stage_instance_create)
 
 - Fetch Message
