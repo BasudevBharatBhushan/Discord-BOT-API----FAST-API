@@ -66,4 +66,4 @@ async def on_voice_state_update(member, before, after):
 async def on_stage_instance_create(stage_instance):
     print(f"Stage instance created: {stage_instance.topic} in channel {stage_instance.channel.name}")
         
-client.run('')
+client.run('<Enter your token here>')
