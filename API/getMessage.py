@@ -1,7 +1,9 @@
+from dotenv import load_dotenv
 import os
 import discord
 import asyncio
 from fastapi import FastAPI
+load_dotenv()
 
 app = FastAPI()
 
@@ -29,7 +31,7 @@ async def on_message(message):
     # You can also store this message data in a database or send it to another API endpoint
 
 async def start_bot():
-    await client.start('MTA4NDg3MTM5ODk5Mzk1Mjg3OQ.GDhhcQ.jyqIylWR2jmdCEK2FF0dJdQL9yv5-ZnVCZBU18')
+    await client.start(os.getenv("DISCORD_BOT_TOKEN"))
 
 async def stop_bot():
     await client.close()
