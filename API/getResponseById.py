@@ -3,6 +3,9 @@ import os
 import discord
 import asyncio
 from fastapi import FastAPI, HTTPException
+from discord.utils import get
+from discord import Permissions
+
 load_dotenv()
 
 app = FastAPI()
@@ -12,13 +15,27 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+#######################################################################
+
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
+      # Debug statement to check if the bot is able to find the server
+    for guild in client.guilds:
+        print(f"Bot is connected to server: {guild.name}")
+
+    # Debug statement to check if the bot is able to find the "Bot" role
+    global bot_role
+    bot_role = get(client.guilds[0].roles, name="Bot")
+    if bot_role is not None:
+        print(f"Bot role found: {bot_role.name}")
+    else:
+        print("Bot role not found")
 
 async def start_bot():
     await client.start(os.getenv("DISCORD_BOT_TOKEN"))
+
 
 async def stop_bot():
     await client.close()
@@ -30,6 +47,10 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     asyncio.create_task(stop_bot())
+
+######################################################################
+
+# Fetch Message by ID
 
 @app.get('/messages/{user_id}')
 async def get_messagesById(user_id:int = None):
@@ -52,6 +73,8 @@ async def get_messagesById(user_id:int = None):
     return messages
 
 
+# Fetch Reaction by user_ID and Channel_ID
+
 @app.get('/reactions/{channel_id}/{user_id}')
 async def get_reaction_by_id(channel_id: int, user_id: int):
     channel = client.get_channel(channel_id)
@@ -72,19 +95,41 @@ async def get_reaction_by_id(channel_id: int, user_id: int):
                 reactions.append(reaction_data)
     return reactions
 
+# Fetch Avatar by user_id
+
 @app.get('/user/pfp/{user_id}')
 async def get_user_pfp(user_id:int):
     user = await client.fetch_user(user_id)
     return str(user.avatar.url)
 
-@client.event
-async def on_stage_instance_create(stage_instance):
-    stage_data = {
-        "channel_id": stage_instance.channel.id,
-        "topic": stage_instance.topic,
-        "start_time": stage_instance.start_time.timestamp()
-    }
-    print(stage_data)
+# Fetch Server Invites
+
+@app.get('/server-invites')
+async def get_server_invites():
+    invites = await client.guilds[0].invites()
+    invite_data = []
+    for invite in invites:
+        invite_data.append({
+            "code": invite.code,  #Invite Code
+            "uses": invite.uses,  # How many times the code has been used (How many users accepted the invite)
+            "max_uses": invite.max_uses, # Max no of times invite can be used (0 if it is unlimited)
+            "inviter_id": invite.inviter.id  # Id of the user who invites
+        })
+    return invite_data
+
+# Fetch Server Invites by user_id
+@app.get('/server-invites/{user_id}')
+async def get_server_invites_by_user(user_id: int):
+    invites = await client.guilds[0].invites()
+    invite_data = []
+    for invite in invites:
+        if invite.inviter.id == user_id:
+            invite_data.append({
+                "code": invite.code,  #Invite Code
+                "uses": invite.uses,  # How many times the code has been used (How many users accepted the invite)
+                "inviter_id": invite.inviter.id,  # Id of the user who invites
+            })
+    return invite_data
 
 if __name__ == '__main__':
     import uvicorn

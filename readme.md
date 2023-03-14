@@ -19,7 +19,7 @@
   See Here - [How to create a Discord BOT](#create-a-discord-bot)
 
 - Step 5: Start the Server  
-  `  uvicorn API:getMessage:app --reload`
+  `  uvicorn API:getResponseById:app --reload`
 
 - Step 6: Go to Swagger UI to test API  
   ` localhost:8000/docs`
@@ -29,7 +29,7 @@
 - Step 1: cd into the API  
   `cd .\API`
 - Step 2: Run the Application  
-  `py -3 main.py`
+  `py -3 events.py`
 
 ## Create a Discord BOT
 
@@ -54,3 +54,20 @@
 # Reference
 
 - [Discord Python SDK](https://discordpy.readthedocs.io/en/stable/index.html)
+
+- [Stage Event](https://discordpy.readthedocs.io/en/latest/api.html?highlight=on_stage_instance_create#discord.on_stage_instance_create)
+
+- Fetch Message
+
+  - [TextChannel.history](https://discordpy.readthedocs.io/en/stable/api.html?highlight=textchannel.history#discord.TextChannel.history)
+  - [Message](https://discordpy.readthedocs.io/en/stable/api.html?highlight=discord%20message#discord.Message)
+
+- [Fetch Reaction](https://discordpy.readthedocs.io/en/stable/api.html#discord.Reaction)
+
+- [Fetching Avatar (pfp)](https://discordpy.readthedocs.io/en/stable/api.html?highlight=user%20avatar_url#discord.User.avatar_url)
+
+- [Fetching Invites](https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild%20invites#discord.Guild.invites)
+
+- [Thread Event](https://discordpy.readthedocs.io/en/latest/api.html?highlight=on_thread_join#discord.on_thread_join)
+
+- [Voice Event](https://discordpy.readthedocs.io/en/latest/api.html#discord.on_voice_state_update)
