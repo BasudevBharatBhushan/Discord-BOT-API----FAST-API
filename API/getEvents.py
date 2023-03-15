@@ -1,17 +1,15 @@
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
+import os
 import discord
-# import os
+import asyncio
+from fastapi import FastAPI
+load_dotenv()
 
-# load_dotenv()
+app = FastAPI()
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
-
-#set stage instance intent be true (Unable to found it in doc)
-# intents.stage_instances = True
-
-
 
 client = discord.Client(intents=intents)
 
@@ -22,29 +20,51 @@ async def on_ready():
         print(f"- {guild.name} (id: {guild.id})")
 
 
+async def start_bot():
+    await client.start(os.getenv("DISCORD_BOT_TOKEN"))
+
+async def stop_bot():
+    await client.close()
+
+@app.on_event("startup")
+async def startup():
+    asyncio.create_task(start_bot())
+
+@app.on_event("shutdown")
+async def shutdown():
+    asyncio.create_task(stop_bot())
+
+#####################################################################
+
+# Get all Messages from the server
+
 @client.event
 async def on_message(message):
-    # if message.author == client.user:
-    #     return
-    
-    print(f'Author:{message.author} Message received: {message.content} Author_Id: {message.author.id} ')
-#     if message.content.startswith('$hello'):
-#         await message.channel.send('Hello!')
+    message_data = {
+        "message_id": message.id,
+        "channel_id": message.channel.id,
+        "channel_name":message.channel.name,
+        "author_id": message.author.id,
+        "author_name":message.author.name,
+        "content": message.content,
+        "timestamp": message.created_at.timestamp()
+    }
+    print(message_data)
+    # You can also store this message data in a database or send it to another API endpoint
 
-
+# Trigger Thread Events
 
 @client.event
 async def on_thread_member_join(member: discord.ThreadMember):
     thread = member.thread
-    print(f"{thread.id} --- {member}")
-    # print(f"{member.name} joined thread {thread.name} ({thread.id})")
+    print(f"{member.id} joined thread {thread.name} ({thread.id})")
 
 @client.event
 async def on_thread_member_remove(member: discord.ThreadMember):
     thread = member.thread
-    print(f"{thread.id} --- {member}")
-    # print(f"{member.name} left thread {thread.name} ({thread.id})")
+    print(f"{member.id} left thread {thread.name} ({thread.id})")
 
+# Trigger Voice Events
 
 @client.event
 async def on_voice_state_update(member, before, after):
@@ -60,6 +80,9 @@ async def on_voice_state_update(member, before, after):
     elif before.channel is None and after.channel is None:
         # User did not change voice channels
         print(f"{member} is not in a voice channel")
+
+
+# Trigger Reaction Events
 
 @client.event
 async def on_raw_reaction_add(payload):
@@ -91,6 +114,8 @@ async def on_raw_reaction_remove(payload):
     }
     print(f"Reaction removed {reaction_data}")
 
+# Trigger Member Events
+
 @client.event
 async def on_member_update(before, after):
     if before.roles != after.roles:
@@ -101,38 +126,22 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_member_join(member):
-    invite = await get_invite(member)
-    print(invite)
-    if invite is not None:
-        invite_data = {
-            "code": invite.code,
-            "inviter_id": invite.inviter.id,
-            "uses": invite.uses,
-            "max_uses": invite.max_uses
-        }
-        print(f"Member {member.id} joined using invite: {invite_data}")
-
     print(f"{member.id} has joined the server!")
 
 @client.event
 async def on_member_remove(member):
-    # Do something when a member leaves or is kicked from the server
    print(f"{member.id} has left the server!")
   
 
+# Trigger Stage Events
 
-async def get_invite(member):
-    invites = await member.guild.invites()
-    for invite in invites:
-        if invite.uses < invite.max_uses and invite.inviter == member:
-            # This invite link was used by the member to join the server
-            return invite
-    return None
+# async def on_stage_instance_create(stage_instance:discord.StageInstance):
+#     print("It is triggered")
+#     print(f"Stage instance created: {stage_instance.topic} in channel {stage_instance.channel.name}")
 
+# async def on_stage_instance_delete(stage_instance):
+#     print("It is triggered2")
 
-
-
-async def on_stage_instance_create(stage_instance):
-    print(f"Stage instance created: {stage_instance.topic} in channel {stage_instance.channel.name}")
-        
-client.run(<Your Bot Token>)
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))

@@ -50,6 +50,26 @@ async def shutdown():
 
 ######################################################################
 
+#Fetch all messages
+
+@app.get('/messages')
+async def get_messages():
+    messages = []
+    for channel in client.get_all_channels():
+        if isinstance(channel, discord.TextChannel):
+            async for message in channel.history(limit=100):
+                message_data = {
+                    "id": message.id,
+                    "channel_id": message.channel.id,
+                    "channel_name":message.channel.name,
+                    "author_id": message.author.id,
+                    "author_name":message.author.name,
+                    "content": message.content,
+                    "timestamp": message.created_at.timestamp()
+                }
+                messages.append(message_data)
+    return messages
+
 # Fetch Message by ID
 
 @app.get('/messages/{user_id}')

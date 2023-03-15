@@ -18,8 +18,10 @@
   `DISCORD_BOT_TOKEN =[Enter your Discord Bot Token] `
   See Here - [How to create a Discord BOT](#create-a-discord-bot)
 
-- Step 5: Start the Server  
-  `  uvicorn API:getResponseById:app --reload`
+- Step 5: Start the Server
+
+  - get_API_Call - `  uvicorn API.getResponse:app --reload`
+  - event_Trigger - `  uvicorn API.getEvents:app --reload`
 
 - Step 6: Go to Swagger UI to test API  
   ` localhost:8000/docs`
